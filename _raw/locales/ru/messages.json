@@ -4608,6 +4608,23 @@
     }
   },
   "component": {
+    "AccountPortfolioList": {
+      "create": "+ Новый портфель",
+      "createPrompt": "Назовите этот портфель",
+      "toggle": "Развернуть или свернуть {{name}}",
+      "pin": "Закрепить {{name}}",
+      "unpin": "Открепить {{name}}",
+      "rename": "Переименовать {{name}}",
+      "renamePrompt": "Переименовать портфель",
+      "remove": "Удалить {{name}}",
+      "removeConfirm": "Удалить портфель '{{name}}'? Аккаунты останутся в вашем кошельке и будут показаны без группы.",
+      "removeTitle": "Удалить портфель?",
+      "removeAction": "Удалить портфель",
+      "empty": "В этом портфеле нет адресов",
+      "moveAccount": "Переместить адрес в портфель",
+      "ungrouped": "Без портфеля",
+      "unavailable": "Портфели недоступны. Ваши адреса по-прежнему доступны."
+    },
     "AccountSearchInput": {
       "noMatchAddress": "Адрес не найден",
       "AddressItem": {

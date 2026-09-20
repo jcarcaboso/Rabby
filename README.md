@@ -56,6 +56,8 @@ Run `yarn build:pro` to build a production package, which will be in the `dist` 
 
 ## Architecture
 
+For a source-linked walkthrough of this checkout, start with the [developer guide](./docs/developer-guide.md). It covers the current stack, runtime architecture, build workflow, and options for a wallet fork or portfolio app. The script descriptions below are an older introduction; the guide explains the current MV3 message bridge and state layers.
+
 ![architecture](./docs/architecture.png)
 
 ## Extension's Scripts

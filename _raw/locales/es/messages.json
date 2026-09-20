@@ -4606,6 +4606,23 @@
     }
   },
   "component": {
+    "AccountPortfolioList": {
+      "create": "+ Nueva cartera",
+      "createPrompt": "Ponle un nombre a esta cartera",
+      "toggle": "Expandir o contraer {{name}}",
+      "pin": "Fijar {{name}}",
+      "unpin": "Desfijar {{name}}",
+      "rename": "Cambiar el nombre de {{name}}",
+      "renamePrompt": "Cambiar el nombre de la cartera",
+      "remove": "Eliminar {{name}}",
+      "removeConfirm": "¿Eliminar la cartera '{{name}}'? Sus cuentas permanecerán en tu billetera y aparecerán sin agrupar.",
+      "removeTitle": "¿Eliminar la cartera?",
+      "removeAction": "Eliminar cartera",
+      "empty": "No hay direcciones en esta cartera",
+      "moveAccount": "Mover dirección a una cartera",
+      "ungrouped": "Sin cartera",
+      "unavailable": "Las carteras no están disponibles. Tus direcciones siguen estando disponibles."
+    },
     "AccountSearchInput": {
       "noMatchAddress": "No hay coincidencia de dirección",
       "AddressItem": {

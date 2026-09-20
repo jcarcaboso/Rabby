@@ -4606,6 +4606,23 @@
     }
   },
   "component": {
+    "AccountPortfolioList": {
+      "create": "+ 新しいポートフォリオ",
+      "createPrompt": "このポートフォリオに名前を付ける",
+      "toggle": "{{name}}を展開または折りたたむ",
+      "pin": "{{name}}をピン留め",
+      "unpin": "{{name}}のピン留めを解除",
+      "rename": "{{name}}の名前を変更",
+      "renamePrompt": "ポートフォリオ名を変更",
+      "remove": "{{name}}を削除",
+      "removeConfirm": "ポートフォリオ「{{name}}」を削除しますか？アカウントはウォレットに残り、グループ化されていない状態で表示されます。",
+      "removeTitle": "ポートフォリオを削除しますか？",
+      "removeAction": "ポートフォリオを削除",
+      "empty": "このポートフォリオにアドレスはありません",
+      "moveAccount": "アドレスをポートフォリオに移動",
+      "ungrouped": "ポートフォリオなし",
+      "unavailable": "ポートフォリオを利用できません。アドレスは引き続き利用できます。"
+    },
     "AccountSearchInput": {
       "noMatchAddress": "一致するアドレスがありません",
       "AddressItem": {

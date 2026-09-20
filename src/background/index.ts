@@ -70,6 +70,7 @@ import {
   perpsService,
   transactionsService,
   feedbackService,
+  accountPortfoliosService,
 } from './service';
 import { customTestnetService } from './service/customTestnet';
 import { GasAccountServiceStore } from './service/gasAccount';
@@ -181,6 +182,9 @@ async function restoreAppState() {
   await pageStateCacheService.init();
   await transactionHistoryService.init();
   await contactBookService.init();
+  await accountPortfoliosService.init().catch((error) => {
+    console.error('[accountPortfolios] failed to initialize store', error);
+  });
   await signTextHistoryService.init();
   await whitelistService.init();
   await swapService.init();

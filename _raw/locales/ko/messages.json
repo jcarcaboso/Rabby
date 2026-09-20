@@ -4603,6 +4603,23 @@
     }
   },
   "component": {
+    "AccountPortfolioList": {
+      "create": "+ 새 포트폴리오",
+      "createPrompt": "이 포트폴리오의 이름을 입력하세요",
+      "toggle": "{{name}} 펼치기 또는 접기",
+      "pin": "{{name}} 고정",
+      "unpin": "{{name}} 고정 해제",
+      "rename": "{{name}} 이름 변경",
+      "renamePrompt": "포트폴리오 이름 변경",
+      "remove": "{{name}} 삭제",
+      "removeConfirm": "포트폴리오 '{{name}}'을(를) 삭제할까요? 계정은 지갑에 그대로 유지되며 그룹 없이 표시됩니다.",
+      "removeTitle": "포트폴리오를 삭제할까요?",
+      "removeAction": "포트폴리오 삭제",
+      "empty": "이 포트폴리오에 주소가 없습니다",
+      "moveAccount": "주소를 포트폴리오로 이동",
+      "ungrouped": "포트폴리오 없음",
+      "unavailable": "포트폴리오를 사용할 수 없습니다. 주소는 계속 사용할 수 있습니다."
+    },
     "AccountSearchInput": {
       "AddressItem": {
         "whitelistedAddressTip": "허가된 주소"

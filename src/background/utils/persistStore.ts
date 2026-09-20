@@ -37,8 +37,9 @@ export type PersistStoreSchema<T> = {
 };
 
 type PersistStoreMetadata<T extends object> = {
-  applyPatch: (partials: Partial<T>) => void;
+  applyPatch: (partials: Partial<T>, persist?: boolean) => void;
   schema?: PersistStoreSchema<T>;
+  name: string;
 };
 
 const persistStoreMetadata = new WeakMap<object, PersistStoreMetadata<any>>();
@@ -180,6 +181,44 @@ export const patchPersistStore = <T extends object>(
   metadata.applyPatch(validatedPartials);
 };
 
+/**
+ * Persist an acknowledged domain mutation before publishing it in memory.
+ * Generic UI-backed stores keep using patchPersistStore's fire-and-forget path.
+ */
+export const patchPersistStoreDurably = async <T extends object>(
+  store: T,
+  partials: Partial<T>
+) => {
+  const metadata = persistStoreMetadata.get(store) as
+    | PersistStoreMetadata<T>
+    | undefined;
+  if (!metadata) {
+    throw new Error('Store was not created by createPersistStore');
+  }
+  if (!metadata.schema) {
+    throw new Error('Persisted store does not have a schema');
+  }
+
+  const validatedState = validatePersistStoreState(metadata.schema, {
+    ...store,
+    ...partials,
+  });
+  const validatedPartials: Partial<T> = {};
+  Object.keys(partials).forEach((key) => {
+    const storeKey = key as keyof T;
+    if (
+      Object.prototype.hasOwnProperty.call(validatedState, storeKey) &&
+      !isEqual(store[storeKey], validatedState[storeKey])
+    ) {
+      validatedPartials[storeKey] = validatedState[storeKey];
+    }
+  });
+  if (!Object.keys(validatedPartials).length) return;
+
+  await storage.set(metadata.name, { ...store, ...validatedPartials });
+  metadata.applyPatch(validatedPartials, false);
+};
+
 interface CreatePersistStoreParams<T> {
   name: string;
   template?: T;
@@ -221,12 +260,12 @@ const createPersistStore = async <T extends object>({
     }
   }
 
-  const commitPartials = (target: T, partials: Partial<T>) => {
+  const commitPartials = (target: T, partials: Partial<T>, persist = true) => {
     const changedKeys = Object.keys(partials);
     if (!changedKeys.length) return;
 
     Object.assign(target, partials);
-    persistStorage(name, target);
+    if (persist) persistStorage(name, target);
     const revision = nextPersistStoreRevision(name);
 
     const sharedKeys = broadcastKeys
@@ -270,8 +309,10 @@ const createPersistStore = async <T extends object>({
     },
   });
   persistStoreMetadata.set(store, {
-    applyPatch: (partials) => commitPartials(tpl, partials as Partial<T>),
+    applyPatch: (partials, persist) =>
+      commitPartials(tpl, partials as Partial<T>, persist),
     schema: schema as PersistStoreSchema<object> | undefined,
+    name,
   });
 
   return store;

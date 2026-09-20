@@ -1,6 +1,7 @@
 import { useAccountStore } from '@/ui/state/account';
 import { initializeBridgeStore } from '@/ui/state/bridge';
 import { initializeContactBookStore } from '@/ui/state/contactBook';
+import { initializeAccountPortfoliosStore } from '@/ui/state/accountPortfolios';
 import { initializeGiftStore } from '@/ui/state/gift';
 import { initializeGasAccountStore } from '@/ui/state/gasAccount';
 import { initializePerpsStore } from '@/ui/state/perps';
@@ -19,6 +20,7 @@ export const initializeBizStores = () => {
   void initializePreferenceStore();
   void initializeBridgeStore();
   void initializeContactBookStore().catch(() => undefined);
+  void initializeAccountPortfoliosStore().catch(() => undefined);
   void initializeGasAccountStore();
   initializePerpsStore();
 

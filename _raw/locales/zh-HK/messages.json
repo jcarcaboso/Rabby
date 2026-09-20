@@ -4653,6 +4653,23 @@
     }
   },
   "component": {
+    "AccountPortfolioList": {
+      "create": "+ 新增分組",
+      "createPrompt": "為此分組命名",
+      "toggle": "展開或收起 {{name}}",
+      "pin": "置頂 {{name}}",
+      "unpin": "取消置頂 {{name}}",
+      "rename": "重新命名 {{name}}",
+      "renamePrompt": "重新命名分組",
+      "remove": "移除 {{name}}",
+      "removeConfirm": "移除分組「{{name}}」？當中的帳戶仍會保留在錢包中，並顯示為未分組。",
+      "removeTitle": "移除分組？",
+      "removeAction": "移除分組",
+      "empty": "此分組中沒有地址",
+      "moveAccount": "將地址移至分組",
+      "ungrouped": "未分組",
+      "unavailable": "分組暫時無法使用。你的地址仍可正常使用。"
+    },
     "AccountSearchInput": {
       "noMatchAddress": "沒有匹配地址",
       "AddressItem": {

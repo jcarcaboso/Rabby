@@ -4606,6 +4606,23 @@
     }
   },
   "component": {
+    "AccountPortfolioList": {
+      "create": "+ Neues Portfolio",
+      "createPrompt": "Dieses Portfolio benennen",
+      "toggle": "{{name}} erweitern oder reduzieren",
+      "pin": "{{name}} anheften",
+      "unpin": "{{name}} lösen",
+      "rename": "{{name}} umbenennen",
+      "renamePrompt": "Portfolio umbenennen",
+      "remove": "{{name}} entfernen",
+      "removeConfirm": "Portfolio '{{name}}' entfernen? Die Konten bleiben in deiner Wallet und werden ohne Gruppierung angezeigt.",
+      "removeTitle": "Portfolio entfernen?",
+      "removeAction": "Portfolio entfernen",
+      "empty": "Keine Adressen in diesem Portfolio",
+      "moveAccount": "Adresse in Portfolio verschieben",
+      "ungrouped": "Kein Portfolio",
+      "unavailable": "Portfolios sind nicht verfügbar. Deine Adressen sind weiterhin verfügbar."
+    },
     "AccountSearchInput": {
       "noMatchAddress": "Keine passende Adresse",
       "AddressItem": {
