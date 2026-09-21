@@ -13,6 +13,7 @@ Rabby is a TypeScript browser extension with a React interface. It contains the 
 | [Build and development](build-and-development.md) | Setup, browser targets, build outputs, checks, and what was verified locally |
 | [Wallet smoke test](wallet-smoke-test.md) | Executed development baseline, resource limits, and the manual account/testnet checklist |
 | [Account portfolios plan](portfolio-implementation-plan.md) | Folder behavior, storage model, UI, implementation sequence, and acceptance tests |
+| [Test the fork beside Rabby](testing-portfolio-dev.md) | Install the named development build, connect both wallets, and rebuild it |
 | [Portfolio verification](portfolio-verification.md) | Automated checks, browser scenarios, screenshots, and remaining test limits |
 | [Fork and portfolio options](fork-and-portfolio.md) | Where to add features, what can be reused, and what a separate portfolio app needs |
 

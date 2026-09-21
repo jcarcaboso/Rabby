@@ -1,6 +1,7 @@
 const webpackMerge = require('webpack-merge');
 
 const configs = {
+  'portfolio-dev': require('./build/webpack.portfolio-dev.config'),
   dev: require('./build/webpack.dev.config'),
   pro: require('./build/webpack.pro.config'),
   debug: require('./build/webpack.debug.config'),

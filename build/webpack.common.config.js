@@ -1,4 +1,5 @@
 const child_process = require('child_process');
+const fs = require('fs');
 const path = require('path');
 
 const webpack = require('webpack');
@@ -40,7 +41,15 @@ const {
 // 'chrome-mv2', 'chrome-mv3', 'firefox-mv2', 'firefox-mv3'
 const MANIFEST_TYPE = process.env.MANIFEST_TYPE || 'chrome-mv2';
 const IS_MANIFEST_MV3 = MANIFEST_TYPE.includes('-mv3');
-const FINAL_DIST = IS_MANIFEST_MV3 ? paths.dist : paths.distMv2;
+const IS_PORTFOLIO_DEV = process.env.RABBY_BUILD_ENV === 'portfolio-dev';
+if (IS_PORTFOLIO_DEV && MANIFEST_TYPE !== 'chrome-mv3') {
+  throw new Error('Portfolio dev requires MANIFEST_TYPE=chrome-mv3');
+}
+const FINAL_DIST = IS_PORTFOLIO_DEV
+  ? paths.rootResolve('dist-portfolio-dev')
+  : IS_MANIFEST_MV3
+  ? paths.dist
+  : paths.distMv2;
 const IS_FIREFOX = MANIFEST_TYPE.includes('firefox');
 const BUILD_ENV = process.env.RABBY_BUILD_ENV || '';
 const disableStyleSourceMap =
@@ -50,16 +59,32 @@ const DEXIE_IMPORT_WRAPPER =
     ? 'import-wrapper-prod.mjs'
     : 'import-wrapper.mjs';
 
-const MANIFEST_FILENAME = resolveManifestFilename({
-  manifestType: MANIFEST_TYPE,
-  buildEnv: BUILD_ENV,
-});
+const MANIFEST_FILENAME = IS_PORTFOLIO_DEV
+  ? 'manifest.dev.json'
+  : resolveManifestFilename({
+      manifestType: MANIFEST_TYPE,
+      buildEnv: BUILD_ENV,
+    });
 const APP_VERSION =
   process.env.VERSION ||
-  resolveManifestVersion({
-    manifestType: MANIFEST_TYPE,
-    buildEnv: BUILD_ENV,
-  });
+  (IS_PORTFOLIO_DEV
+    ? require('../src/manifest/chrome-mv3/manifest.dev.json').version
+    : resolveManifestVersion({
+        manifestType: MANIFEST_TYPE,
+        buildEnv: BUILD_ENV,
+      }));
+
+const portfolioDevTitle = (template) =>
+  IS_PORTFOLIO_DEV
+    ? {
+        templateContent: fs
+          .readFileSync(template, 'utf8')
+          .replace(
+            /<title>[^<]*<\/title>/,
+            '<title>Rabby Portfolio Dev</title>'
+          ),
+      }
+    : {};
 
 const config = {
   entry: {
@@ -73,6 +98,7 @@ const config = {
     offscreen: paths.rootResolve('src/offscreen/scripts/offscreen.ts'),
   },
   output: {
+    ...(IS_PORTFOLIO_DEV ? { clean: true } : {}),
     path: FINAL_DIST,
     filename: '[name].js',
     publicPath: '/',
@@ -89,6 +115,18 @@ const config = {
     : {}),
   module: {
     rules: [
+      ...(IS_PORTFOLIO_DEV
+        ? [
+            {
+              enforce: 'pre',
+              include: [
+                require.resolve('@rabby-wallet/page-provider'),
+                paths.rootResolve('src/content-script/index.ts'),
+              ],
+              loader: path.resolve(__dirname, 'portfolio-dev-loader.js'),
+            },
+          ]
+        : []),
       {
         test: /\.jsx?$|\.tsx?$/,
         exclude: /node_modules/,
@@ -274,24 +312,28 @@ const config = {
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.popupHtml,
+      ...portfolioDevTitle(paths.popupHtml),
       chunks: ['ui'],
       filename: 'popup.html',
     }),
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.notificationHtml,
+      ...portfolioDevTitle(paths.notificationHtml),
       chunks: ['ui'],
       filename: 'notification.html',
     }),
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.indexHtml,
+      ...portfolioDevTitle(paths.indexHtml),
       chunks: ['ui'],
       filename: 'index.html',
     }),
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.desktopHtml,
+      ...portfolioDevTitle(paths.desktopHtml),
       chunks: ['ui'],
       filename: 'desktop.html',
     }),
@@ -323,12 +365,51 @@ const config = {
     }),
     new CopyPlugin({
       patterns: [
-        { from: paths.rootResolve('_raw'), to: FINAL_DIST },
+        {
+          from: paths.rootResolve('_raw'),
+          to: FINAL_DIST,
+          ...(IS_PORTFOLIO_DEV
+            ? {
+                transform(content, absoluteFrom) {
+                  // Official Rabby owns go.rabby.io navigation in a shared profile.
+                  if (
+                    path.basename(absoluteFrom) === 'go-rabby-link-router.js'
+                  ) {
+                    return '// Portfolio dev leaves official Rabby links to Rabby.\n';
+                  }
+                  return content;
+                },
+              }
+            : {}),
+        },
         {
           from: paths.rootResolve(
             `src/manifest/${MANIFEST_TYPE}/${MANIFEST_FILENAME}`
           ),
           to: path.resolve(FINAL_DIST, 'manifest.json'),
+          ...(IS_PORTFOLIO_DEV
+            ? {
+                transform(content) {
+                  const manifest = JSON.parse(content.toString());
+                  return JSON.stringify(
+                    {
+                      ...manifest,
+                      key: require('./portfolio-dev-key.json').key,
+                      name: 'Rabby Portfolio Dev',
+                      short_name: 'Portfolio Dev',
+                      description:
+                        'Development fork of Rabby with account portfolio folders.',
+                      action: {
+                        ...manifest.action,
+                        default_title: 'Rabby Portfolio Dev',
+                      },
+                    },
+                    null,
+                    2
+                  );
+                },
+              }
+            : {}),
         },
         IS_MANIFEST_MV3
           ? {
@@ -353,10 +434,7 @@ const config = {
           from: require.resolve(
             '@trezor/connect-web/lib/webextension/trezor-usb-permissions.js'
           ),
-          to: path.resolve(
-            FINAL_DIST,
-            './vendor/trezor-usb-permissions.js'
-          ),
+          to: path.resolve(FINAL_DIST, './vendor/trezor-usb-permissions.js'),
         },
         ...(IS_MANIFEST_MV3
           ? [
@@ -364,10 +442,7 @@ const config = {
                 from: require.resolve(
                   '@trezor/connect-web/lib/webextension/trezor-usb-permissions.html'
                 ),
-                to: path.resolve(
-                  FINAL_DIST,
-                  './trezor-usb-permissions.html'
-                ),
+                to: path.resolve(FINAL_DIST, './trezor-usb-permissions.html'),
               },
             ]
           : []),
