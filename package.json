@@ -14,6 +14,7 @@
     "build:pro:mv2": "cross-env MANIFEST_TYPE=firefox-mv2 npm run build:pro:default",
     "build:debug:mv2": "cross-env MANIFEST_TYPE=firefox-mv2 npm run build:debug:default",
     "build:dev": "cross-env MANIFEST_TYPE=chrome-mv3 npm run build:dev:default",
+    "build:portfolio-dev": "npm run make-theme && cross-env MANIFEST_TYPE=chrome-mv3 NODE_OPTIONS=--max-old-space-size=5120 webpack --env config=portfolio-dev --stats errors-warnings",
     "build:turbodev": "cross-env MANIFEST_TYPE=chrome-mv3 npm run build:dev:turbo",
     "dev": "cross-env FORK_TS_CHECKER=enable MANIFEST_TYPE=chrome-mv3 TAILWIND_MODE=build npm run build:dev:default",
     "dev:hot": "cross-env FORK_TS_CHECKER=enable MANIFEST_TYPE=chrome-mv3 HOT=true TAILWIND_MODE=build npm run build:hot",

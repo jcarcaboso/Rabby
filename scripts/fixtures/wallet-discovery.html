@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <meta charset="utf-8" />
+  <title>Wallet connection test</title>
+  <style>
+    body {
+      font: 16px system-ui;
+      max-width: 760px;
+      margin: 48px auto;
+      padding: 20px;
+    }
+    section {
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 16px;
+      margin: 16px 0;
+    }
+    button {
+      font: inherit;
+      padding: 10px 16px;
+      cursor: pointer;
+    }
+    pre {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+  </style>
+  <h1>Wallet connection test</h1>
+  <p>
+    Each button requests an account from that wallet through EIP-6963. This page
+    never requests a signature or transaction.
+  </p>
+  <div id="wallets"></div>
+  <script>
+    window.discoveredWallets = new Map();
+    window.addEventListener('eip6963:announceProvider', ({ detail }) => {
+      if (discoveredWallets.has(detail.info.uuid)) return;
+      discoveredWallets.set(detail.info.uuid, detail);
+      const section = document.createElement('section');
+      const title = document.createElement('h2');
+      title.textContent = detail.info.name;
+      const identity = document.createElement('p');
+      identity.textContent = detail.info.rdns;
+      const result = document.createElement('pre');
+      result.setAttribute('role', 'status');
+      const button = document.createElement('button');
+      button.textContent = `Connect ${detail.info.name}`;
+      button.onclick = async () => {
+        button.disabled = true;
+        result.textContent = 'Waiting for wallet approval…';
+        try {
+          const accounts = await detail.provider.request({
+            method: 'eth_requestAccounts',
+          });
+          result.textContent = JSON.stringify(accounts, null, 2);
+        } catch (error) {
+          result.textContent = `Rejected: ${error.message}`;
+        } finally {
+          button.disabled = false;
+        }
+      };
+      section.append(title, identity, button, result);
+      document.querySelector('#wallets').append(section);
+    });
+    window.dispatchEvent(new Event('eip6963:requestProvider'));
+  </script>
+</html>
