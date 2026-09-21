@@ -5,6 +5,7 @@ import browser from 'webextension-polyfill';
 export {
   default as createPersistStore,
   patchPersistStore,
+  patchPersistStoreDurably,
 } from './persistStore';
 export type { PersistStoreSchema } from './persistStore';
 

@@ -50,6 +50,23 @@
     }
   },
   "component": {
+    "AccountPortfolioList": {
+      "create": "+ Nouveau portefeuille",
+      "createPrompt": "Nommez ce portefeuille",
+      "toggle": "Développer ou réduire {{name}}",
+      "pin": "Épingler {{name}}",
+      "unpin": "Désépingler {{name}}",
+      "rename": "Renommer {{name}}",
+      "renamePrompt": "Renommer le portefeuille",
+      "remove": "Supprimer {{name}}",
+      "removeConfirm": "Supprimer le portefeuille '{{name}}' ? Ses comptes resteront dans votre wallet et apparaîtront sans groupe.",
+      "removeTitle": "Supprimer le portefeuille ?",
+      "removeAction": "Supprimer le portefeuille",
+      "empty": "Aucune adresse dans ce portefeuille",
+      "moveAccount": "Déplacer l'adresse vers un portefeuille",
+      "ungrouped": "Aucun portefeuille",
+      "unavailable": "Les portefeuilles sont indisponibles. Vos adresses restent disponibles."
+    },
     "AccountSearchInput": {
       "AddressItem": {
         "whitelistedAddressTip": "Adresse sur liste blanche"

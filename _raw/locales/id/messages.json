@@ -4603,6 +4603,23 @@
     }
   },
   "component": {
+    "AccountPortfolioList": {
+      "create": "+ Portofolio baru",
+      "createPrompt": "Beri nama portofolio ini",
+      "toggle": "Perluas atau ciutkan {{name}}",
+      "pin": "Sematkan {{name}}",
+      "unpin": "Lepas sematan {{name}}",
+      "rename": "Ganti nama {{name}}",
+      "renamePrompt": "Ganti nama portofolio",
+      "remove": "Hapus {{name}}",
+      "removeConfirm": "Hapus portofolio '{{name}}'? Akunnya akan tetap ada di dompet Anda dan ditampilkan tanpa grup.",
+      "removeTitle": "Hapus portofolio?",
+      "removeAction": "Hapus portofolio",
+      "empty": "Tidak ada alamat dalam portofolio ini",
+      "moveAccount": "Pindahkan alamat ke portofolio",
+      "ungrouped": "Tanpa portofolio",
+      "unavailable": "Portofolio tidak tersedia. Alamat Anda tetap tersedia."
+    },
     "AccountSearchInput": {
       "AddressItem": {
         "whitelistedAddressTip": "Alamat dalam daftar putih"

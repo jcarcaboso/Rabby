@@ -25,6 +25,11 @@ import { ReactComponent as RcIconPinned } from 'ui/assets/icon-pinned.svg';
 import { CopyChecked } from '../CopyChecked';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 import './styles.less';
+import {
+  AccountPortfolioList,
+  CreatePortfolioButton,
+} from '../AccountPortfolioList';
+import { useAccountPortfoliosStore } from '@/ui/state/accountPortfolios';
 
 interface DesktopSelectAccountListProps {
   isShowApprovalAlert?: boolean;
@@ -43,6 +48,8 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
   const currentAccount = useCurrentAccount();
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const shouldScrollRef = useRef(true);
+  const portfolios = useAccountPortfoliosStore((state) => state.portfolios);
+  const hasPortfolios = Object.keys(portfolios).length > 0;
 
   const {
     sortedAccountsList,
@@ -96,40 +103,74 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
         'h-full flex flex-col gap-[12px] rounded-[20px] pb-[20px]'
       )}
     >
-      <Virtuoso
-        ref={virtuosoRef}
-        className={'flex-1'}
-        data={filteredAccounts}
-        totalCount={filteredAccounts.length}
-        defaultItemHeight={72 + 12}
-        itemContent={(index, item) => {
-          const isSelected = currentAccount
-            ? isSameAccount(item, currentAccount)
-            : false;
+      {hasPortfolios ? (
+        <div className="flex-1 overflow-auto">
+          <AccountPortfolioList
+            desktop
+            accounts={filteredAccounts}
+            currentAddress={currentAccount?.address}
+            isAccountPinned={(item) =>
+              highlightedAddresses.some(
+                (highlighted) =>
+                  isSameAddress(item.address, highlighted.address) &&
+                  item.brandName === highlighted.brandName
+              )
+            }
+            renderAccount={(item) => (
+              <AccountItem
+                key={`${item.address}-${item.type}-${item.brandName}`}
+                onClick={() => switchAccount(item)}
+                isSelected={
+                  !!currentAccount && isSameAccount(item, currentAccount)
+                }
+                isPined={highlightedAddresses.some(
+                  (highlighted) =>
+                    isSameAddress(item.address, highlighted.address) &&
+                    item.brandName === highlighted.brandName
+                )}
+                item={item}
+                isShowApprovalCount={isShowApprovalAlert}
+              />
+            )}
+          />
+        </div>
+      ) : (
+        <Virtuoso
+          ref={virtuosoRef}
+          className={'flex-1'}
+          data={filteredAccounts}
+          totalCount={filteredAccounts.length}
+          defaultItemHeight={72 + 12}
+          itemContent={(index, item) => {
+            const isSelected = currentAccount
+              ? isSameAccount(item, currentAccount)
+              : false;
 
-          const isPined = highlightedAddresses.some(
-            (highlighted) =>
-              isSameAddress(item.address, highlighted.address) &&
-              item.brandName === highlighted.brandName
-          );
-          return (
-            <AccountItem
-              key={`${item.address}-${item.type}-${item.brandName}`}
-              onClick={() => {
-                switchAccount(item);
-              }}
-              isSelected={isSelected}
-              isPined={isPined}
-              item={item}
-              isShowApprovalCount={isShowApprovalAlert}
-            >
-              {item.address}
-            </AccountItem>
-          );
-        }}
+            const isPined = highlightedAddresses.some(
+              (highlighted) =>
+                isSameAddress(item.address, highlighted.address) &&
+                item.brandName === highlighted.brandName
+            );
+            return (
+              <AccountItem
+                key={`${item.address}-${item.type}-${item.brandName}`}
+                onClick={() => {
+                  switchAccount(item);
+                }}
+                isSelected={isSelected}
+                isPined={isPined}
+                item={item}
+                isShowApprovalCount={isShowApprovalAlert}
+              >
+                {item.address}
+              </AccountItem>
+            );
+          }}
 
-        // increaseViewportBy={100}
-      />
+          // increaseViewportBy={100}
+        />
+      )}
+      <CreatePortfolioButton />
       <div
         onClick={() => {
           setAddAddress({
@@ -160,6 +201,7 @@ const AccountItem: React.FC<{
   isPined?: boolean;
   children?: React.ReactNode;
 }> = ({ item, onClick, isSelected, isShowApprovalCount, isPined }) => {
+  const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
   const history = useHistory();
   const addressTypeIcon = useBrandIcon({
@@ -196,8 +238,21 @@ const AccountItem: React.FC<{
             >
               {item.alianName}
             </div>
-            <div
-              className={isPined ? '' : 'opacity-0 group-hover:opacity-100'}
+            <button
+              type="button"
+              aria-pressed={isPined}
+              aria-label={t(
+                isPined
+                  ? 'component.AccountPortfolioList.unpin'
+                  : 'component.AccountPortfolioList.pin',
+                { name: item.alianName || item.address }
+              )}
+              className={clsx(
+                isPined
+                  ? ''
+                  : 'opacity-0 group-hover:opacity-100 focus:opacity-100',
+                'focus:outline-none focus-visible:ring-2 focus-visible:ring-r-blue-default rounded'
+              )}
               onClick={(e) => {
                 e.stopPropagation();
                 dispatch.addressManagement.toggleHighlightedAddressAsync({
@@ -210,7 +265,7 @@ const AccountItem: React.FC<{
                 className="w-[16px] h-[16px]"
                 src={isPined ? RcIconPinnedFill : RcIconPinned}
               />
-            </div>
+            </button>
 
             <div
               className="ml-auto opacity-0 group-hover:opacity-100 text-r-neutral-body cursor-pointer"

@@ -4609,6 +4609,23 @@
     }
   },
   "component": {
+    "AccountPortfolioList": {
+      "create": "+ Yeni portföy",
+      "createPrompt": "Bu portföye ad verin",
+      "toggle": "{{name}} öğesini genişlet veya daralt",
+      "pin": "{{name}} öğesini sabitle",
+      "unpin": "{{name}} öğesinin sabitlemesini kaldır",
+      "rename": "{{name}} öğesini yeniden adlandır",
+      "renamePrompt": "Portföyü yeniden adlandır",
+      "remove": "{{name}} öğesini kaldır",
+      "removeConfirm": "'{{name}}' portföyü kaldırılsın mı? Hesapları cüzdanınızda kalacak ve gruplandırılmadan görünecektir.",
+      "removeTitle": "Portföy kaldırılsın mı?",
+      "removeAction": "Portföyü kaldır",
+      "empty": "Bu portföyde adres yok",
+      "moveAccount": "Adresi portföye taşı",
+      "ungrouped": "Portföy yok",
+      "unavailable": "Portföyler kullanılamıyor. Adresleriniz hâlâ kullanılabilir."
+    },
     "AccountSearchInput": {
       "noMatchAddress": "Eşleşen adres yok",
       "AddressItem": {

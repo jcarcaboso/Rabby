@@ -46,6 +46,7 @@ import {
   perpsService,
   miscService,
   feedbackService,
+  accountPortfoliosService,
 } from 'background/service';
 import type { GasAccountServiceStore } from 'background/service/gasAccount';
 import extensionUpdateService from 'background/service/extensionUpdate';
@@ -2693,6 +2694,8 @@ export class WalletController extends BaseController {
     key: Key
   ): PersistedStoreMap[Key] => {
     switch (key) {
+      case 'accountPortfolios':
+        return accountPortfoliosService.getStore() as PersistedStoreMap[Key];
       case 'bridge':
         return bridgeService.getBridgeData() as PersistedStoreMap[Key];
       case 'contactBook':
@@ -2743,6 +2746,11 @@ export class WalletController extends BaseController {
     }
 
     switch (key) {
+      case 'accountPortfolios':
+        accountPortfoliosService.patchStore(
+          patch as PersistedStorePatch<'accountPortfolios'>
+        );
+        return;
       case 'bridge':
         bridgeService.patchStore(patch as PersistedStorePatch<'bridge'>);
         return;
@@ -2778,6 +2786,29 @@ export class WalletController extends BaseController {
         throw new Error(`Unknown persisted store: ${String(key)}`);
     }
   };
+
+  createAccountPortfolio = (name: string): Promise<string> =>
+    accountPortfoliosService.create(name);
+
+  renameAccountPortfolio = (id: string, name: string): Promise<void> =>
+    accountPortfoliosService.rename(id, name);
+
+  setAccountPortfolioPinned = (id: string, pinned: boolean): Promise<void> =>
+    accountPortfoliosService.setPinned(id, pinned);
+
+  removeAccountPortfolio = (id: string): Promise<void> =>
+    accountPortfoliosService.remove(id);
+
+  setAccountPortfolioMembership = (
+    address: string,
+    portfolioId: string | null,
+    expectedPortfolioId: string | null
+  ): Promise<void> =>
+    accountPortfoliosService.setMembership(
+      address,
+      portfolioId,
+      expectedPortfolioId
+    );
 
   setRedirect2Points = RabbyPointsService.setRedirect2Points;
   setRabbyPointsSignature = RabbyPointsService.setSignature;
@@ -4378,6 +4409,13 @@ export class WalletController extends BaseController {
       removeEmptyKeyrings
     );
     if (!(await keyringService.hasAddress(address))) {
+      try {
+        await accountPortfoliosService.removeMembershipForMissingAccount(
+          address
+        );
+      } catch (error) {
+        console.error('[accountPortfolios] failed to remove membership', error);
+      }
       contactBookService.removeAlias(address);
       whitelistService.removeWhitelist(address);
       transactionHistoryService.removeList(address);
@@ -4472,8 +4510,15 @@ export class WalletController extends BaseController {
   };
 
   removeMnemonicsKeyRingByPublicKey = async (publicKey: string) => {
+    const addresses =
+      this.#getMnemonicKeyRingFromPublicKey(publicKey)?.accounts?.slice() || [];
     this.removePublicKeyFromStash(publicKey);
-    keyringService.removeKeyringByPublicKey(publicKey);
+    await keyringService.removeKeyringByPublicKey(publicKey);
+    await Promise.allSettled(
+      addresses.map((address) =>
+        accountPortfoliosService.removeMembershipForMissingAccount(address)
+      )
+    );
   };
 
   #getMnemonicKeyRingFromPublicKey = (publicKey: string) => {
@@ -6847,6 +6892,7 @@ export class WalletController extends BaseController {
   };
 
   resetBooted = async () => {
+    await accountPortfoliosService.clear();
     await keyringService.resetBooted();
     // This clears `booted` without locking, so the correct destination for
     // other open pages is /welcome -- which PrivateRoute resolves once the

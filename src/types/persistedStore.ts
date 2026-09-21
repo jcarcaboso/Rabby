@@ -6,8 +6,10 @@ import type { CustomRPCServiceStore } from '@/background/service/rpc';
 import type { SwapServiceStore } from '@/background/service/swap';
 import type { WhitelistStore } from '@/background/service/whitelist';
 import type { PublicOpenapiStore } from '@/services/openapi';
+import type { AccountPortfoliosState } from '@/background/service/accountPortfolios';
 
 export type PersistedStoreMap = {
+  accountPortfolios: AccountPortfoliosState;
   bridge: BridgeServiceStore;
   contactBook: ContactBookStore;
   currency: CurrencyStore;

@@ -1,4 +1,5 @@
 import { useAccountStore } from '@/ui/state/account';
+import { initializeAccountPortfoliosStore } from '@/ui/state/accountPortfolios';
 import { initializeBridgeStore } from '@/ui/state/bridge';
 import { initializeContactBookStore } from '@/ui/state/contactBook';
 import { initializeGiftStore } from '@/ui/state/gift';
@@ -15,6 +16,10 @@ jest.mock('@/ui/state/account', () => ({
 
 jest.mock('@/ui/state/bridge', () => ({
   initializeBridgeStore: jest.fn(),
+}));
+
+jest.mock('@/ui/state/accountPortfolios', () => ({
+  initializeAccountPortfoliosStore: jest.fn().mockResolvedValue(undefined),
 }));
 
 jest.mock('@/ui/state/contactBook', () => ({
@@ -57,6 +62,7 @@ describe('initializeBizStores', () => {
     await initializeBizStores();
 
     expect(initializePreferenceStore).toHaveBeenCalledTimes(1);
+    expect(initializeAccountPortfoliosStore).toHaveBeenCalledTimes(1);
     expect(initializeBridgeStore).toHaveBeenCalledTimes(1);
     expect(initializeContactBookStore).toHaveBeenCalledTimes(1);
     expect(initializeGasAccountStore).toHaveBeenCalledTimes(1);

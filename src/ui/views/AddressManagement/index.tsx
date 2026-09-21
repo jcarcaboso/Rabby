@@ -36,6 +36,11 @@ import { UI_TYPE } from '@/constant/ui';
 import { ReactComponent as RcIconArrowRight14 } from '@/ui/assets/address/arrow-right-14.svg';
 import { useMemoizedFn } from 'ahooks';
 import browser from 'webextension-polyfill';
+import {
+  AccountPortfolioList,
+  CreatePortfolioButton,
+} from '@/ui/component/AccountPortfolioList';
+import { useAccountPortfoliosStore } from '@/ui/state/accountPortfolios';
 
 function NoAddressUI() {
   const { t } = useTranslation();
@@ -91,6 +96,8 @@ const AddressManagement = () => {
   );
   const debouncedSearchKeyword = useSyncStaleValue(searchKeyword, 250);
   const wallet = useWallet();
+  const portfolios = useAccountPortfoliosStore((state) => state.portfolios);
+  const hasPortfolios = Object.keys(portfolios).length > 0;
 
   const {
     accountList,
@@ -286,7 +293,9 @@ const AddressManagement = () => {
       props: any //ListChildComponentProps<typeof accountsList[] | typeof accountsList>
     ) => {
       const { data, index, style } = props;
-      const account = data[index];
+      const portfolioMode = !Array.isArray(data) && data.portfolio;
+      const rowData = portfolioMode ? data.accounts : data;
+      const account = rowData[index];
 
       const render = (
         account: typeof accountsList[number],
@@ -302,7 +311,8 @@ const AddressManagement = () => {
           <>
             <div
               className={clsx(
-                'address-wrap-with-padding px-[20px]',
+                'address-wrap-with-padding',
+                !portfolioMode && 'px-[20px]',
                 isGroup && 'row-group'
               )}
               style={!isGroup ? style : undefined}
@@ -316,12 +326,21 @@ const AddressManagement = () => {
                 alias={account.alianName}
                 isUpdatingBalance={isUpdateAllBalanceLoading}
                 extra={
-                  <div
+                  <button
+                    type="button"
+                    aria-pressed={favorited}
+                    aria-label={t(
+                      favorited
+                        ? 'component.AccountPortfolioList.unpin'
+                        : 'component.AccountPortfolioList.pin',
+                      { name: account.alianName || account.address }
+                    )}
                     className={clsx(
                       'icon-star border-none px-0',
                       favorited
                         ? 'is-active'
-                        : 'opacity-0 group-hover:opacity-100'
+                        : 'opacity-0 group-hover:opacity-100 focus:opacity-100',
+                      'focus:outline-none focus-visible:ring-2 focus-visible:ring-r-blue-default rounded'
                     )}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -336,7 +355,7 @@ const AddressManagement = () => {
                       className="w-[13px] h-[13px]"
                       src={favorited ? RcIconPinnedFill : RcIconPinned}
                     />
-                  </div>
+                  </button>
                 }
                 onClick={() => {
                   history.push(
@@ -355,7 +374,7 @@ const AddressManagement = () => {
                 enableSwitch={enableSwitch}
               />
 
-              {!isGroup && index === data.length - 1
+              {!portfolioMode && !isGroup && index === rowData.length - 1
                 ? AddNewAddressColumn
                 : null}
             </div>
@@ -363,11 +382,11 @@ const AddressManagement = () => {
         );
       };
 
-      if (addressSortStore.sortType === 'addressType') {
+      if (!portfolioMode && addressSortStore.sortType === 'addressType') {
         return (
           <div style={style} className="address-type-container">
             {(account as typeof accountsList)?.map((e) => render(e, true))}
-            {index === data.length - 1 ? (
+            {!portfolioMode && index === rowData.length - 1 ? (
               <div className="mx-20">{AddNewAddressColumn}</div>
             ) : null}
           </div>
@@ -380,6 +399,7 @@ const AddressManagement = () => {
       highlightedAddresses,
       isUpdateAllBalanceLoading,
       switchAccount,
+      t,
       addressSortStore?.sortType,
       dispatch?.addressManagement?.toggleHighlightedAddressAsync,
     ]
@@ -575,10 +595,43 @@ const AddressManagement = () => {
           <RcIconRight className="relative top-1" />
         </div>
       </div>
-      {noAnyAccount ? (
+      <div className="flex justify-end px-[20px] pb-[8px]">
+        <CreatePortfolioButton />
+      </div>
+      {noAnyAccount && !hasPortfolios ? (
         <NoAddressUI />
-      ) : noAnySearchedAccount ? (
+      ) : debouncedSearchKeyword &&
+        noAnySearchedAccount &&
+        !Object.values(portfolios).some((portfolio) =>
+          portfolio.name
+            .toLowerCase()
+            .includes(debouncedSearchKeyword.trim().toLowerCase())
+        ) ? (
         <NoSearchedAddressUI />
+      ) : hasPortfolios ? (
+        <div className="address-group-list management overflow-auto">
+          <AccountPortfolioList
+            accounts={accountList}
+            currentAddress={currentAccount?.address}
+            keyword={debouncedSearchKeyword}
+            isAccountPinned={(account) =>
+              highlightedAddresses.some(
+                (item) =>
+                  item.address.toLowerCase() ===
+                    account.address.toLowerCase() &&
+                  item.brandName === account.brandName
+              )
+            }
+            renderAccount={(account) =>
+              Row({
+                data: { portfolio: true, accounts: [account] },
+                index: 0,
+                style: {},
+              })
+            }
+          />
+          <div className="mx-[20px]">{AddNewAddressColumn}</div>
+        </div>
       ) : (
         <div className={'address-group-list management'}>
           <VList

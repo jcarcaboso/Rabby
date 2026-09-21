@@ -4603,6 +4603,23 @@
     }
   },
   "component": {
+    "AccountPortfolioList": {
+      "create": "+ Novo portefólio",
+      "createPrompt": "Dê um nome a este portefólio",
+      "toggle": "Expandir ou recolher {{name}}",
+      "pin": "Fixar {{name}}",
+      "unpin": "Desafixar {{name}}",
+      "rename": "Mudar o nome de {{name}}",
+      "renamePrompt": "Mudar o nome do portefólio",
+      "remove": "Remover {{name}}",
+      "removeConfirm": "Remover o portefólio '{{name}}'? As contas permanecerão na sua carteira e aparecerão sem agrupamento.",
+      "removeTitle": "Remover portefólio?",
+      "removeAction": "Remover portefólio",
+      "empty": "Nenhum endereço neste portefólio",
+      "moveAccount": "Mover endereço para um portefólio",
+      "ungrouped": "Sem portefólio",
+      "unavailable": "Os portefólios estão indisponíveis. Os seus endereços continuam disponíveis."
+    },
     "AccountSearchInput": {
       "AddressItem": {
         "whitelistedAddressTip": "Endereço na lista branca"

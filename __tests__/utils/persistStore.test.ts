@@ -1,7 +1,9 @@
 import {
   default as createPersistStore,
   getPersistStoreOrigin,
+  getPersistStoreRevision,
   patchPersistStore,
+  patchPersistStoreDurably,
   PersistStoreSchemaValidationError,
 } from '@/background/utils/persistStore';
 import { storage } from '@/background/webapi';
@@ -216,6 +218,50 @@ describe('patchPersistStore', () => {
       PersistStoreSchemaValidationError
     );
     expect(store.count).toBe(0);
+  });
+
+  test('durable patch publishes only after one successful storage write', async () => {
+    (storage.get as jest.Mock).mockResolvedValue(undefined);
+    (storage.set as jest.Mock).mockResolvedValue(undefined);
+    const store = await createPersistStore<TestStore>({
+      name: 'test-durable-persist-store',
+      template: { count: 0, optional: undefined },
+      schema: testStoreSchema,
+    });
+    (storage.set as jest.Mock).mockClear();
+    (syncStateToUI as jest.Mock).mockClear();
+
+    await patchPersistStoreDurably(store, { count: 1 });
+
+    expect(storage.set).toHaveBeenCalledTimes(1);
+    expect(storage.set).toHaveBeenCalledWith(
+      'test-durable-persist-store',
+      expect.objectContaining({ count: 1 })
+    );
+    expect(store.count).toBe(1);
+    expect(syncStateToUI).toHaveBeenCalledTimes(1);
+  });
+
+  test('durable patch leaves state, revision and broadcast unchanged on failure', async () => {
+    (storage.get as jest.Mock).mockResolvedValue(undefined);
+    (storage.set as jest.Mock).mockResolvedValue(undefined);
+    const name = 'test-failed-durable-persist-store';
+    const store = await createPersistStore<TestStore>({
+      name,
+      template: { count: 0, optional: undefined },
+      schema: testStoreSchema,
+    });
+    (storage.set as jest.Mock).mockRejectedValueOnce(new Error('disk full'));
+    (syncStateToUI as jest.Mock).mockClear();
+    const revision = getPersistStoreRevision(name);
+
+    await expect(patchPersistStoreDurably(store, { count: 1 })).rejects.toThrow(
+      'disk full'
+    );
+
+    expect(store.count).toBe(0);
+    expect(getPersistStoreRevision(name)).toBe(revision);
+    expect(syncStateToUI).not.toHaveBeenCalled();
   });
 });
 

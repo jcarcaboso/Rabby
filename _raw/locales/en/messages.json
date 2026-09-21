@@ -4835,6 +4835,23 @@
       "addAddresses": "Add address",
       "smallSwapDisabledTips": "This address type is not supported"
     },
+    "AccountPortfolioList": {
+      "create": "+ New portfolio",
+      "createPrompt": "Name this portfolio",
+      "toggle": "Expand or collapse {{name}}",
+      "pin": "Pin {{name}}",
+      "unpin": "Unpin {{name}}",
+      "rename": "Rename {{name}}",
+      "renamePrompt": "Rename portfolio",
+      "remove": "Remove {{name}}",
+      "removeConfirm": "Remove portfolio '{{name}}'? Its accounts will remain in your wallet and appear ungrouped.",
+      "removeTitle": "Remove portfolio?",
+      "removeAction": "Remove portfolio",
+      "empty": "No addresses in this portfolio",
+      "moveAccount": "Move address to portfolio",
+      "ungrouped": "No portfolio",
+      "unavailable": "Portfolios are unavailable. Your addresses are still available."
+    },
     "LpTokenTag": {
       "title": "This is a liquidity provider(LP) token",
       "descriptionFor": "This is a Liquidity Provider(LP) Token for {{ protocolName }}",

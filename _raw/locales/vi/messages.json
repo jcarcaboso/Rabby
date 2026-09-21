@@ -4603,6 +4603,23 @@
     }
   },
   "component": {
+    "AccountPortfolioList": {
+      "create": "+ Danh mục mới",
+      "createPrompt": "Đặt tên cho danh mục này",
+      "toggle": "Mở rộng hoặc thu gọn {{name}}",
+      "pin": "Ghim {{name}}",
+      "unpin": "Bỏ ghim {{name}}",
+      "rename": "Đổi tên {{name}}",
+      "renamePrompt": "Đổi tên danh mục",
+      "remove": "Xóa {{name}}",
+      "removeConfirm": "Xóa danh mục '{{name}}'? Các tài khoản vẫn sẽ nằm trong ví của bạn và được hiển thị mà không thuộc nhóm nào.",
+      "removeTitle": "Xóa danh mục?",
+      "removeAction": "Xóa danh mục",
+      "empty": "Không có địa chỉ trong danh mục này",
+      "moveAccount": "Chuyển địa chỉ vào danh mục",
+      "ungrouped": "Không có danh mục",
+      "unavailable": "Danh mục hiện không khả dụng. Các địa chỉ của bạn vẫn khả dụng."
+    },
     "AccountSearchInput": {
       "AddressItem": {
         "whitelistedAddressTip": "Địa chỉ được chấp thuận"
